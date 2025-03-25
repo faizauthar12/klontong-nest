@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductSchema } from './product/product.entity';
 import { ProductModule } from './product/product.module';
+import { CategorySchema } from './category/category.entity';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -14,11 +16,12 @@ import { ProductModule } from './product/product.module';
       username: 'postgres',
       password: 'postgres',
       database: 'postgres',
-      entities: [ProductSchema],
+      entities: [ProductSchema, CategorySchema],
       synchronize: true,
       autoLoadEntities: true,
     }),
     ProductModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
