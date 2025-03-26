@@ -6,6 +6,8 @@ import { ProductSchema } from './product/product.entity';
 import { ProductModule } from './product/product.module';
 import { CategorySchema } from './category/category.entity';
 import { CategoryModule } from './category/category.module';
+import { LogSchema } from './log/log.entity';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -16,12 +18,13 @@ import { CategoryModule } from './category/category.module';
       username: 'postgres',
       password: 'postgres',
       database: 'klontong',
-      entities: [ProductSchema, CategorySchema],
+      entities: [ProductSchema, CategorySchema, LogSchema],
       synchronize: true,
       autoLoadEntities: true,
     }),
     ProductModule,
     CategoryModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

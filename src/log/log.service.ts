@@ -17,4 +17,21 @@ export class LogService {
 
     return await this.logRepository.save(newLog);
   }
+
+  async findAll(
+    page: number,
+    per_page: number,
+  ): Promise<{ data: LogSchema[]; total: number }> {
+    const queryBuilder = this.logRepository.createQueryBuilder('logs');
+    queryBuilder.orderBy('logs.created_at', 'DESC');
+
+    const total = await queryBuilder.getCount();
+
+    const skip = (page - 1) * per_page;
+    queryBuilder.skip(skip).take(per_page);
+
+    const logs = await queryBuilder.getMany();
+
+    return { data: logs, total };
+  }
 }
