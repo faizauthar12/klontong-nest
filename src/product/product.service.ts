@@ -37,14 +37,30 @@ export class ProductService {
     return await this.productRepository.save(newProduct);
   }
 
-  async findAll(): Promise<FindProductDto[]> {
-    const products = await this.productRepository.find({
-      relations: {
-        category: true,
-      },
-    });
+  async findAll(
+    page: number,
+    per_page: number,
+    search?: string,
+  ): Promise<{ data: FindProductDto[]; total: number }> {
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category');
 
-    return products.map((product) => {
+    if (search) {
+      queryBuilder
+        .where(`product.name LIKE '%${search}%'`)
+        .orWhere(`product.description LIKE '%${search}%'`)
+        .orWhere(`product.sku LIKE '%${search}%'`);
+    }
+
+    const total = await queryBuilder.getCount();
+
+    const skip = (page - 1) * per_page;
+    queryBuilder.skip(skip).take(per_page);
+
+    const products = await queryBuilder.getMany();
+
+    const productDtos = products.map((product) => {
       const response = new FindProductDto();
 
       response.id = product.id;
@@ -62,6 +78,9 @@ export class ProductService {
 
       return response;
     });
+
+    // return the data and total
+    return { data: productDtos, total };
   }
 
   async findById(id: number): Promise<FindProductDto> {

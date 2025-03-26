@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -32,13 +33,25 @@ export class ProductController {
   }
 
   @Get()
-  async findAll(@Res() response: Response) {
-    const products = await this.productService.findAll();
+  async findAll(
+    @Res() response: Response,
+    @Query('page') page: number = 1,
+    @Query('per_page') per_page: number = 10,
+    @Query('search') search: string,
+  ) {
+    const productsResponse = await this.productService.findAll(
+      page,
+      per_page,
+      search,
+    );
 
     response.status(HttpStatus.OK).json({
       status: HttpStatus.OK,
       message: 'Products have been retrieved successfully',
-      data: products,
+      data: productsResponse.data,
+      total: productsResponse.total,
+      page: page,
+      per_page: per_page,
     });
   }
 
