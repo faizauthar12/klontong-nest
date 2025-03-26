@@ -10,15 +10,16 @@ services:
     ports:
       - 5432:5432
     restart: always
-  
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: user@localhost.com
-#      PGADMIN_DEFAULT_PASSWORD: password123
-#    ports:
-#      - 8888:80
-#    restart: always
+    network_mode: 'host'
+
+  app:
+    build:
+      context: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    network_mode: 'host'
 
 volumes:
   data:
