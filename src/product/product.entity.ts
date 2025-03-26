@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { CategorySchema } from '../category/category.entity';
-import { JoinTable } from 'typeorm/browser';
 
 @Entity('products')
 export class ProductSchema {
