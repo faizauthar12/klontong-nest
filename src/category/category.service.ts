@@ -13,6 +13,10 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto): Promise<CategorySchema> {
     const newCategory = this.categoryRepository.create(createCategoryDto);
+
+    let dateNow = new Date();
+    newCategory.createdAt = dateNow;
+
     return await this.categoryRepository.save(newCategory);
   }
 

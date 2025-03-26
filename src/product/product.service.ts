@@ -4,21 +4,64 @@ import { Repository } from 'typeorm';
 import { ProductSchema } from './product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { CategorySchema } from '../category/category.entity';
+import { FindProductDto } from './dto/find-product.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductSchema)
     private productRepository: Repository<ProductSchema>,
+    @InjectRepository(CategorySchema)
+    private categoryRepository: Repository<CategorySchema>,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<ProductSchema> {
-    const newMenu = this.productRepository.create(createProductDto);
-    return await this.productRepository.save(newMenu);
+    // Find Category
+    const category = await this.categoryRepository.findOne({
+      where: { id: createProductDto.categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundException(
+        `Category with ID ${createProductDto.categoryId} not found`,
+      );
+    }
+
+    // Assign product with category
+    const newProduct = this.productRepository.create({
+      ...createProductDto,
+      category: category,
+    });
+
+    return await this.productRepository.save(newProduct);
   }
 
-  async findAll(): Promise<ProductSchema[]> {
-    return await this.productRepository.find();
+  async findAll(): Promise<FindProductDto[]> {
+    const products = await this.productRepository.find({
+      relations: {
+        category: true,
+      },
+    });
+
+    return products.map((product) => {
+      const response = new FindProductDto();
+
+      response.id = product.id;
+      response.sku = product.sku;
+      response.name = product.name;
+      response.description = product.description;
+      response.weight = product.weight;
+      response.width = product.width;
+      response.length = product.length;
+      response.height = product.height;
+      response.image = product.image;
+      response.price = product.price;
+      response.categoryId = product.category?.id || null;
+      response.categoryName = product.category?.name || null;
+
+      return response;
+    });
   }
 
   async findById(id: number): Promise<ProductSchema> {

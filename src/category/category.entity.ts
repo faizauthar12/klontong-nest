@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductSchema } from '../product/product.entity';
 
 @Entity('categories')
 export class CategorySchema {
@@ -14,9 +15,12 @@ export class CategorySchema {
   @Column({ nullable: false })
   createdAt: Date;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   updatedAt: Date;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   deletedAt: Date;
+
+  @OneToMany(() => ProductSchema, (productSchema) => productSchema.category)
+  products: ProductSchema[];
 }
