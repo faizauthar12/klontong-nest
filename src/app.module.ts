@@ -8,6 +8,7 @@ import { CategorySchema } from './category/category.entity';
 import { CategoryModule } from './category/category.module';
 import { LogSchema } from './log/log.entity';
 import { LogModule } from './log/log.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LogModule } from './log/log.module';
     ProductModule,
     CategoryModule,
     LogModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
