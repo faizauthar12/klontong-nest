@@ -64,15 +64,33 @@ export class ProductService {
     });
   }
 
-  async findById(id: number): Promise<ProductSchema> {
+  async findById(id: number): Promise<FindProductDto> {
     const product = await this.productRepository.findOne({
       where: { id: id },
+      relations: {
+        category: true,
+      },
     });
 
     if (!product) {
       throw new NotFoundException('Product does not exist!');
     } else {
-      return product;
+      const response = new FindProductDto();
+
+      response.id = product.id;
+      response.sku = product.sku;
+      response.name = product.name;
+      response.description = product.description;
+      response.weight = product.weight;
+      response.width = product.width;
+      response.length = product.length;
+      response.height = product.height;
+      response.image = product.image;
+      response.price = product.price;
+      response.categoryId = product.category?.id || null;
+      response.categoryName = product.category?.name || null;
+
+      return response;
     }
   }
 
@@ -87,7 +105,14 @@ export class ProductService {
   }
 
   async remove(id: number): Promise<ProductSchema> {
-    const product = await this.findById(id);
+    const product = await this.productRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product does not exist!');
+    }
+
     return this.productRepository.remove(product);
   }
 }
